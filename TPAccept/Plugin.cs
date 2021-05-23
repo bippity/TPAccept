@@ -11,9 +11,16 @@ namespace TPAccept
     [ApiVersion(2, 1)]
     public class Plugin : TerrariaPlugin
     {
+		// time before the request is ignored (indexed) (this should be 10 seconds)
 		public Timer[] _AcceptCounter;
+
+		// player who sent the request (indexed)
 		public TSPlayer _RequestPlayer;
+
+		// player who recieves request (indexed)
 		public TSPlayer _TargetPlayer;
+
+		// start of plugin
 		public Plugin(Main game) : base(game) { }
 		public override Version Version
 		{
@@ -37,14 +44,18 @@ namespace TPAccept
 			Commands.ChatCommands.Add(new Command("tpa.use", TPA, "tpa"));
         }
 
+		// start of command
 		private void TPA(CommandArgs args)
         {
+			// syntax entirely invalid
 			if (args.Parameters.Count >= 2)
             {
 				args.Player.SendErrorMessage("Invalid usage. Correct usage: '/tpa (player)'"); return;
             }
+			// syntax valid for sending request
 			if (args.Parameters.Count == 1)
 			{
+				// find the player
 				var players = TSPlayer.FindByNameOrID(args.Parameters[0]);
 				if (players.Count == 0)
 					args.Player.SendErrorMessage("Invalid player!");
@@ -65,6 +76,7 @@ namespace TPAccept
 					}
 				}
 			}
+			// syntax valid for accepting request
 			if (args.Parameters.Count == 0)
             {
 				if (_RequestPlayer is sending request to _TargetPlayer)
@@ -78,14 +90,20 @@ namespace TPAccept
                 }
             }
 		}
+		
+		// seperate void to teleport, makes calling this easier
 		private void TeleportToTarget(TSPlayer player, TSPlayer target)
         {
 			player.Teleport(target.TPlayer.position.X, target.TPlayer.position.Y);
         }
+
+		// seperate info bubble to handle requested and (probably) invoke the timer?
 		private void Requested(TSPlayer player, TSPlayer target)
         {
 			target.SendInfoMessage($"{player.Name} has requested to teleport to you. Type '/tpa' to accept. Ignore to deny.");
         }
+
+		// timer has passed, probably using timer.elapsed
 		private void TimerPassed(TSPlayer player, TSPlayer target)
         {
 			player.SendErrorMessage($"{target.Name} has not accepted your request in time.");
