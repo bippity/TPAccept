@@ -84,8 +84,8 @@ namespace TPAccept
 					TeleportToTarget(_RequestPlayer, _TargetPlayer);
 					args.Player.SendSuccessMessage($"Successfully teleported {_RequestPlayer.Name} to you.");
                 }
-				if (_RequestPlayer is null)
-                {
+				if (_RequestPlayer is null for _targetPlayer) //some index stuff to check?
+					{
 					args.Player.SendErrorMessage("Nobody currently requests to teleport to you. '/tpa (player)' to send a request to another player."); return;
                 }
             }
