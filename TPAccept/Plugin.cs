@@ -22,7 +22,7 @@ namespace TPAccept
 		}
 		public override string Author
 		{
-			get { return "Rozen4334"; }
+			get { return "Rozen4334, nyan-ko"; }
 		}
 		public override string Name
 		{
@@ -30,7 +30,7 @@ namespace TPAccept
 		}
 		public override string Description
 		{
-			get { return "A accepting and denying feature for teleports in TShock for Terraria, replacing TPAllow."; }
+			get { return "A accepting and denying feature for teleports in TShock for Terraria, replacing the base tp feature."; }
 		}
 
 		public override void Initialize()
@@ -69,10 +69,10 @@ namespace TPAccept
 					}
 					else
 					{
-                        Requests.AddRequest(args.Player, target);
+                        Requests.AddRequest(target, args.Player);
 
-						args.Player.SendSuccessMessage($"Sent teleport request to: {target.Name}. They have 10 seconds to accept or deny.");
-					}
+						args.Player.SendInfoMessage($"Sent teleport request to: {target.Name}. They have 10 seconds to accept or deny.");
+                    }
 				}
 			}
 			// syntax valid for accepting request
@@ -90,18 +90,6 @@ namespace TPAccept
                 }
             }
 		}
-
-		// seperate info bubble to handle requested and (probably) invoke the timer?
-		private void Requested(TSPlayer player, TSPlayer target)
-        {
-			target.SendInfoMessage($"{player.Name} has requested to teleport to you. Type '/tpa' to accept. Ignore to deny.");
-        }
-
-		// timer has passed, probably using timer.elapsed
-		private void TimerPassed(TSPlayer player, TSPlayer target)
-        {
-			player.SendErrorMessage($"{target.Name} has not accepted your request in time.");
-        }
 	}
 
     public class RequestingPlayer
@@ -143,12 +131,12 @@ namespace TPAccept
 
         public void AddRequest(TSPlayer target, TSPlayer requester)
         {
-            if (target >= 256 || target < 0)
+            if (target.Index >= 256 || target.Index < 0)
             {
                 return;
             }
 
-            RequestsByPlayers[target] = new RequestingPlayer(target, requester);
+            RequestsByPlayers[target.Index] = new RequestingPlayer(target.Index, requester.Index);
 
             Requested(target, requester);
         }
@@ -157,10 +145,10 @@ namespace TPAccept
         {
             // just to make sure the slot is nulled so a new player doesnt
             // take an old request that could still be active
-            RequestsByPlayers[args.whoAmI] = null; 
+            RequestsByPlayers[args.Who] = null; 
         }
 
-        public void Update()
+        public void Update(EventArgs args)
         {
             for (int i = 0; i < 256; i++)
             {
@@ -209,7 +197,7 @@ namespace TPAccept
 
                 Teleport(p, t);
 
-                rq.GetTarget.SendSuccessMessage($"Successfully teleported {rq.RequesterName} to you.");
+                rq.GetTarget.SendInfoMessage($"Successfully teleported {rq.RequesterName} to you.");
 
                 RequestsByPlayers[index] = null;
             }
@@ -236,11 +224,12 @@ namespace TPAccept
         private void Teleport(TSPlayer player, TSPlayer target)
         {
             player.Teleport(target.TPlayer.position.X, target.TPlayer.position.Y);
+            player.SendInfoMessage($"{target.Name} has accepted your teleport request.");
         }
 
         private void Requested(TSPlayer target, TSPlayer requester)
         { 
-            target.SendInfoMessage($"{requester.Name} has requested to teleport to you. Type '/tpa' to accept. Ignore to deny.");
+            target.SendInfoMessage($"{requester.Name} has requested to teleport to you. You have 10 seconds to reply. Type '/tpa' to accept. Ignore to deny.");
         }
 
         private void DurationPassed(RequestingPlayer request)
@@ -250,6 +239,8 @@ namespace TPAccept
             if (player != null)
             {
                 player.SendErrorMessage($"{request.TargetName} has not accepted your request in time.");
+
+                request.GetTarget.SendErrorMessage($"{player.Name}'s request has been ignored and denied.");
             }
         }
     }
