@@ -8,9 +8,10 @@ Permission: tpa.use
 Command: 
 /tpa (player)
 - This sends a request to a player
+
 /tpa
 - This accepts a pending request, or gives you a warning if you do not have any requests pending.
 
 A request will be denied once 10 seconds have passed. Both target and executing user are notified of this.
 
-* Special thanks to @nyan-ko for contributing to this plugin. 
+Special thanks to @nyan-ko for contributing to this plugin. 
