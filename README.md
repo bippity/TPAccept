@@ -6,6 +6,7 @@ This plugin replaces the base TP command and has permissions for ignoring TPAllo
 Permission: tpa.use
 
 Command: 
+
 /tpa (player)
 - This sends a request to a player
 
