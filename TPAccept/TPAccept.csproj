@@ -7,13 +7,13 @@
 
   <ItemGroup>
     <Reference Include="OTAPI">
-      <HintPath>..\..\..\assembly\TShock.4.5.2.Terraria.1.4.2.2a\OTAPI.dll</HintPath>
+      <HintPath>..\..\..\assembly\TShock.4.5.3.Terraria.1.4.2.3a\OTAPI.dll</HintPath>
     </Reference>
     <Reference Include="TerrariaServer">
-      <HintPath>..\..\..\assembly\TShock.4.5.2.Terraria.1.4.2.2a\TerrariaServer.exe</HintPath>
+      <HintPath>..\..\..\assembly\TShock.4.5.3.Terraria.1.4.2.3a\TerrariaServer.exe</HintPath>
     </Reference>
     <Reference Include="TShockAPI">
-      <HintPath>..\..\..\assembly\TShock.4.5.2.Terraria.1.4.2.2a\ServerPlugins\TShockAPI.dll</HintPath>
+      <HintPath>..\..\..\assembly\TShock.4.5.3.Terraria.1.4.2.3a\ServerPlugins\TShockAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -14,6 +14,8 @@ namespace TPAccept
     {
         public RequestManager Requests = new RequestManager();
 
+        private const string TPPerm = "tpa.tp";
+
 		// start of plugin
 		public Plugin(Main game) : base(game) { }
 		public override Version Version
@@ -38,7 +40,7 @@ namespace TPAccept
 			Commands.ChatCommands.Add(new Command("tpa.use", TPA, "tpa"));
 
             ServerApi.Hooks.GameUpdate.Register(this, Requests.Update);
-            ServerApi.Hooks.NetGreetPlayer.Register(this, Requests.OnGreet);  // doing from memory so i dont know if this is actually the name of the hook
+            ServerApi.Hooks.NetGreetPlayer.Register(this, Requests.OnGreet);
         }
 
 		// start of command
@@ -52,41 +54,47 @@ namespace TPAccept
 			// syntax valid for sending request
 			if (args.Parameters.Count == 1)
 			{
-				// find the player
-				var players = TSPlayer.FindByNameOrID(args.Parameters[0]);
-				if (players.Count == 0)
-					args.Player.SendErrorMessage("Invalid player!");
-				else if (players.Count > 1)
-					args.Player.SendMultipleMatchError(players.Select(p => p.Name));
-				else
-				{
-					// making use of tpallow so people dont get requests.
-					// making use of tpoverride so that it can still be applied.
-					var target = players[0];
-					if (!target.TPAllow && !args.Player.HasPermission(Permissions.tpoverride))
-					{
-						args.Player.SendErrorMessage("{0} has disabled players from teleporting.", target.Name); return;
-					}
-					else
-					{
-                        Requests.AddRequest(target, args.Player);
+                if (args.Player.HasPermission(TPPerm))
+                {
+                    // find the player
+                    var players = TSPlayer.FindByNameOrID(args.Parameters[0]);
+                    if (players.Count == 0)
+                        args.Player.SendErrorMessage("Invalid player!");
+                    else if (players.Count > 1)
+                        args.Player.SendMultipleMatchError(players.Select(p => p.Name));
+                    else
+                    {
+                        // making use of tpallow so people dont get requests.
+                        // making use of tpoverride so that it can still be applied.
+                        var target = players[0];
+                        if (!target.TPAllow && !args.Player.HasPermission(Permissions.tpoverride))
+                        {
+                            args.Player.SendErrorMessage("{0} has disabled players from teleporting.", target.Name); return;
+                        }
+                        else
+                        {
+                            Requests.AddRequest(target, args.Player);
 
-						args.Player.SendInfoMessage($"Sent teleport request to: {target.Name}. They have 10 seconds to accept or deny.");
+                            args.Player.SendInfoMessage($"Sent teleport request to: {target.Name}. They have 10 seconds to accept or deny.");
+                        }
                     }
-				}
+                }
+                else args.Player.SendErrorMessage("You do not have the permission to teleport to players. You can accept teleport requests with '/tpa'");
 			}
 			// syntax valid for accepting request
 			if (args.Parameters.Count == 0)
             {
                 var request = Requests.Check(args.Player.Index);
 
-				if (request != null)
-				{
+                if (request != null)
+                {
                     Requests.AcceptRequest(args.Player.Index);
                 }
-				else 
-		        {
-					args.Player.SendErrorMessage("Nobody currently requests to teleport to you. '/tpa (player)' to send a request to another player.");
+                else
+                {
+                    args.Player.SendErrorMessage("Nobody currently requests to teleport to you.");
+                    if (args.Player.HasPermission(TPPerm))
+                        args.Player.SendInfoMessage("Type '/tpa (player)' to send a request to another player.");
                 }
             }
 		}
