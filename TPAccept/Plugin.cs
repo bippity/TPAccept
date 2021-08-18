@@ -20,7 +20,7 @@ namespace TPAccept
 		public Plugin(Main game) : base(game) { }
 		public override Version Version
 		{
-			get { return Assembly.GetExecutingAssembly().GetName().Version; }
+			get { return new Version(1, 2); }
 		}
 		public override string Author
 		{
