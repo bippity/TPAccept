@@ -46,6 +46,12 @@ namespace TPAccept
 		// start of command
 		private void TPA(CommandArgs args)
         {
+            // player = dead
+            if (args.Player.Dead)
+            {
+                args.Player.SendErrorMessage("You are not allowed to use this command while you're dead.");
+                return;
+            }
 			// syntax entirely invalid
 			if (args.Parameters.Count >= 2)
             {
@@ -141,6 +147,11 @@ namespace TPAccept
         {
             if (target.Index >= 256 || target.Index < 0)
             {
+                return;
+            }
+            if (RequestsByPlayers.Any(x => x.GetTarget != null))
+            {
+                requester.SendErrorMessage($"Another player is already trying to teleport to {target.Name}. Please try again later.");
                 return;
             }
 
@@ -243,12 +254,13 @@ namespace TPAccept
         private void DurationPassed(RequestingPlayer request)
         {
             var player = request.GetRequester;
+            var target = request.GetTarget;
 
             if (player != null)
             {
-                player.SendErrorMessage($"{request.TargetName} has not accepted your request in time.");
-
                 request.GetTarget.SendErrorMessage($"{player.Name}'s request has been ignored and denied.");
+                if (target.IsLoggedIn)
+                    player.SendErrorMessage($"{request.TargetName} has not accepted your request in time.");
             }
         }
     }
