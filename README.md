@@ -1,11 +1,17 @@
-# TPAccept
+# TPAccept:
 
 A plugin for TShock for Terraria, inheriting the concept of Minecrafts' multiplayer TP feature. 
 This plugin replaces the base TP command and has permissions for ignoring TPAllow & the TPAllow flag itself parsed.
 
-Permission: tpa.use
+## Permissions: 
 
-Command: 
+Accept teleport requests
+- tpa.use
+
+Send teleport requests
+- tpa.tp
+
+## Command: 
 
 /tpa (player)
 - This sends a request to a player
